@@ -91,45 +91,6 @@ if (!isset($_SESSION['kt_auth']) || $_SESSION['kt_auth'] !== true) {
     }
 }
 
-/**
- * Validates the core configuration and returns an array of errors/warnings.
- */
-function kaiju_validate_config()
-{
-    $config = kaiju_config();
-    $errors = [];
-
-    // 1. Language Check
-    if (empty($config['base_lang'])) {
-        $errors[] = "Missing 'base_lang'.";
-    }
-    if (empty($config['languages']) || !is_array($config['languages'])) {
-        $errors[] = "Missing or invalid 'languages' array.";
-    } elseif (isset($config['base_lang']) && !in_array($config['base_lang'], $config['languages'])) {
-        $errors[] = "Base language '{$config['base_lang']}' not found in active languages list.";
-    }
-
-    // 2. Provider Check
-    $allowedProviders = ['openai', 'deepseek', 'gemini', 'gpt4'];
-    $provider = strtolower($config['translation_provider'] ?? '');
-    if (empty($provider)) {
-        $errors[] = "Translation provider not set.";
-    } elseif (!in_array($provider, $allowedProviders)) {
-        $errors[] = "Invalid provider '{$provider}'. Use: openai, deepseek, or gemini.";
-    }
-
-    // 3. API Key Check
-    if (empty($config['api_key'])) {
-        $errors[] = "API Key is missing. Translation will run in Mock Mode.";
-    }
-
-    // 4. Base URL Check (for sitemaps)
-    if (empty($config['base_url'])) {
-        $errors[] = "Missing 'base_url'. SEO sitemaps cannot be generated via CLI/Dashboard without it.";
-    }
-
-    return $errors;
-}
 
 // 3. Config Validation
 $configErrors = kaiju_validate_config();
