@@ -11,5 +11,8 @@ function get_cli_base_url()
         return $config['base_url'];
 
     $folder = basename(realpath(__DIR__ . '/../../'));
+    if ($folder === 'html' || $folder === 'var')
+        return null; // Too generic for guessing
+
     return 'http://localhost/' . $folder;
 }

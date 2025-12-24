@@ -1,6 +1,7 @@
 <?php
-// Manually require the runner
-require __DIR__ . '/../run.php';
+// This file is included by the generated stubs (e.g. /en/about.php)
+
+require_once __DIR__ . '/bootstrap.php';
 
 use KaijuTranslator\Core\Router;
 use KaijuTranslator\Core\Translator;

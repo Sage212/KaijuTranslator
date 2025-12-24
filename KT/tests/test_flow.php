@@ -2,8 +2,9 @@
 // tests/test_flow.php
 
 // Mock server environment
+$folder = basename(realpath(__DIR__ . '/../../'));
 $_SERVER['HTTP_HOST'] = 'localhost';
-$_SERVER['REQUEST_URI'] = '/Kaijutranslator/en/test_page.php';
+$_SERVER['REQUEST_URI'] = "/$folder/en/test_page.php";
 $_SERVER['HTTPS'] = 'off';
 
 // Define the constant as the stub would
@@ -20,7 +21,7 @@ echo "--- Simulating Request to /en/test_page.php ---\n";
 // We need to capture the output of run.php
 ob_start();
 try {
-    require __DIR__ . '/../kaiju-translator/run.php';
+    require __DIR__ . '/../run.php';
 } catch (Exception $e) {
     echo "Error: " . $e->getMessage();
 }
