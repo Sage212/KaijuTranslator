@@ -16,7 +16,7 @@ function save_kaiju_config($baseLang, $targetLangs, $provider, $model, $apiKey)
     $configContent .= "    'model' => '$model',\n";
     $configContent .= "    'api_key' => '$apiKey',\n\n";
 
-    $configContent .= "    $configContent .= "    // --- Advanced Settings (Defaults) ---\n";
+    $configContent .= "    // --- Advanced Settings (Defaults) ---\n";
     $configContent .= "    'uninstall_password' => 'kaiju123', // Change this!\n";
     $configContent .= "    'cache_path' => __DIR__ . '/cache',\n";
     $configContent .= "    'sitemaps_path' => __DIR__ . '/../sitemaps/kaiju',\n";
