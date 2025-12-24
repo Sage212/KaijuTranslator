@@ -2,9 +2,11 @@
 
 if (php_sapi_name() !== 'cli') {
     // --- Web UI ---
+    $allLangs = include __DIR__ . '/KT/languages.php';
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $baseLang = $_POST['base_lang'] ?? 'es';
-        $targetLangs = array_map('trim', explode(',', $_POST['target_langs'] ?? 'en,fr'));
+        $targetLangs = $_POST['target_langs'] ?? [];
         if (!in_array($baseLang, $targetLangs))
             array_unshift($targetLangs, $baseLang);
 
@@ -13,10 +15,10 @@ if (php_sapi_name() !== 'cli') {
         $apiKey = $_POST['api_key'] ?? '';
 
         // Save Config
-        include __DIR__ . '/KT/save_config_helper.php'; 
+        include __DIR__ . '/KT/save_config_helper.php';
         save_kaiju_config($baseLang, $targetLangs, $provider, $model, $apiKey);
 
-        header("Location: dashboard.php");
+        header("Location: KT/dashboard.php");
         exit;
     }
     ?>
@@ -25,18 +27,18 @@ if (php_sapi_name() !== 'cli') {
 
     <head>
         <meta charset="UTF-8">
-        <title>🦖 KT Setup</title>
+        <title>🦖 KT Setup | Global Website</title>
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
         <style>
             body {
                 background: #0f172a;
                 color: white;
                 font-family: 'Outfit', sans-serif;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 100vh;
+                padding: 40px;
                 margin: 0;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
             }
 
             .card {
@@ -45,12 +47,21 @@ if (php_sapi_name() !== 'cli') {
                 padding: 40px;
                 border-radius: 24px;
                 border: 1px solid rgba(255, 255, 255, 0.1);
-                width: 400px;
+                max-width: 900px;
+                margin: auto;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
             }
 
             h1 {
                 color: #38bdf8;
                 margin-top: 0;
+                font-size: 28px;
+            }
+
+            .form-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
             }
 
             label {
@@ -65,47 +76,144 @@ if (php_sapi_name() !== 'cli') {
                 width: 100%;
                 background: rgba(0, 0, 0, 0.2);
                 border: 1px solid rgba(255, 255, 255, 0.1);
-                padding: 10px;
+                padding: 12px;
                 border-radius: 8px;
                 color: white;
                 box-sizing: border-box;
+                outline: none;
+            }
+
+            input:focus,
+            select:focus {
+                border-color: #38bdf8;
+            }
+
+            .lang-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                max-height: 350px;
+                overflow-y: auto;
+                background: rgba(0, 0, 0, 0.3);
+                padding: 15px;
+                border-radius: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .lang-item {
+                font-size: 13px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 5px;
+                border-radius: 6px;
+                transition: background 0.2s;
+            }
+
+            .lang-item:hover {
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .lang-item input {
+                width: auto;
+                cursor: pointer;
+            }
+
+            .search-box {
+                margin-bottom: 15px;
+                border-color: rgba(56, 189, 248, 0.3);
             }
 
             button {
-                background: #38bdf8;
+                background: linear-gradient(135deg, #38bdf8, #0ea5e9);
                 color: #0f172a;
                 border: none;
                 width: 100%;
-                padding: 12px;
-                border-radius: 8px;
-                font-weight: 600;
-                margin-top: 20px;
+                padding: 18px;
+                border-radius: 12px;
+                font-weight: 700;
+                margin-top: 30px;
                 cursor: pointer;
+                font-size: 16px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+
+            button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3);
+            }
+
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #38bdf8;
+                border-radius: 10px;
             }
         </style>
     </head>
 
     <body>
         <div class="card">
-            <h1>🦖 KT Setup</h1>
+            <h1>🦖 KT Global Setup</h1>
+            <p style="color: #94a3b8; font-size: 14px; margin-bottom: 30px;">Choose your base language and all the target
+                markets you want to dominate.</p>
             <form method="POST">
-                <label>Base Language (e.g. es)</label>
-                <input type="text" name="base_lang" placeholder="es" required>
-                <label>Target Languages (comma separated)</label>
-                <input type="text" name="target_langs" placeholder="en,fr" required>
-                <label>Provider</label>
-                <select name="provider">
-                    <option value="openai">OpenAI</option>
-                    <option value="deepseek">DeepSeek</option>
-                    <option value="gemini">Gemini</option>
-                </select>
-                <label>Model</label>
-                <input type="text" name="model" placeholder="gpt-4o-mini">
-                <label>API Key</label>
-                <input type="password" name="api_key">
-                <button type="submit">Complete Setup</button>
+                <div class="form-grid">
+                    <div>
+                        <label>Base Language</label>
+                        <select name="base_lang">
+                            <?php foreach ($allLangs as $code => $name): ?>
+                                <option value="<?= $code ?>" <?= $code == 'es' ? 'selected' : '' ?>><?= $name ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <label>Translation Provider</label>
+                        <select name="provider">
+                            <option value="openai">OpenAI (Recommended)</option>
+                            <option value="deepseek">DeepSeek</option>
+                            <option value="gemini">Google Gemini</option>
+                        </select>
+                        <label>AI Model</label>
+                        <input type="text" name="model" value="gpt-4o-mini">
+                        <label>API Key</label>
+                        <input type="password" name="api_key" placeholder="Paste your API key here">
+                    </div>
+                    <div>
+                        <label>Target Languages (Select as many as you want)</label>
+                        <input type="text" class="search-box" id="langSearch" placeholder="🔍 Search for a language..."
+                            onkeyup="filterLangs()">
+                        <div class="lang-grid" id="langGrid">
+                            <?php foreach ($allLangs as $code => $name): ?>
+                                <div class="lang-item">
+                                    <input type="checkbox" name="target_langs[]" value="<?= $code ?>" id="lang_<?= $code ?>">
+                                    <label for="lang_<?= $code ?>"
+                                        style="margin:0; color:white; cursor:pointer; font-weight: 300;"><?= $name ?></label>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit">Deploy Global Website</button>
             </form>
         </div>
+        <script>
+            function filterLangs() {
+                var input = document.getElementById('langSearch');
+                var filter = input.value.toLowerCase();
+                var items = document.getElementsByClassName('lang-item');
+                for (var i = 0; i < items.length; i++) {
+                    var label = items[i].getElementsByTagName('label')[0];
+                    if (label.innerHTML.toLowerCase().indexOf(filter) > -1) {
+                        items[i].style.display = "";
+                    } else {
+                        items[i].style.display = "none";
+                    }
+                }
+            }
+        </script>
     </body>
 
     </html>

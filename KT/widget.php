@@ -14,32 +14,29 @@ $baseLang = $config['base_lang'];
 $currentLang = defined('KT_LANG') ? KT_LANG : $baseLang;
 
 // Determine source path
-// If we are in a stub, Router logic might not be instantiated if we are just including the widget in the BASE page.
-// We need to support both contexts.
 if (class_exists('KaijuTranslator\Core\Router')) {
 $router = new KaijuTranslator\Core\Router($config);
 $sourcePath = $router->resolveSourceUrl($currentLang);
 } else {
-// Only happens if bootstrap failed or context weird, fallback
 $sourcePath = $_SERVER['REQUEST_URI'];
 }
 
-echo '<div class="kaiju-widget"
-    style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-    ';
-    echo '<select onchange="window.location.href=this.value">';
+$allLangs = include __DIR__ . '/languages.php';
+
+echo '<div class="kaiju-widget" style="position: fixed; bottom: 25px; right: 25px; z-index: 9999;">';
+    echo '<select onchange="window.location.href=this.value"
+        style="background: rgba(15, 23, 42, 0.8); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 12px 18px; border-radius: 14px; backdrop-filter: blur(12px); font-family: sans-serif; font-size: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); outline: none; cursor: pointer; transition: all 0.3s; border-left: 4px solid #38bdf8;">';
 
         foreach ($langs as $lang) {
         if ($lang === $baseLang) {
         $url = $sourcePath;
-        // Ensure we don't double slash if sourcePath is /
-        if ($url === '/') $url = '/'; // Keep as /
         } else {
         $url = '/' . $lang . $sourcePath;
         }
 
         $selected = ($lang === $currentLang) ? 'selected' : '';
-        echo '<option value="' . htmlspecialchars($url) . '" ' . $selected . '>' . strtoupper($lang) . '</option>';
+        $langName = isset($allLangs[$lang]) ? $allLangs[$lang] : strtoupper($lang);
+        echo '<option value="' . htmlspecialchars($url) . '" ' . $selected . '>' . $langName . '</option>';
         }
 
         echo '</select>';
