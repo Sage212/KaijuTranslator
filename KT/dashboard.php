@@ -92,31 +92,25 @@ if (!isset($_SESSION['kt_auth']) || $_SESSION['kt_auth'] !== true) {
 }
 
 
-// 3. Config Validation
-$configErrors = kaiju_validate_config();
-if (!empty($configErrors)) {
-    $errorsList = "<ul>";
-    foreach ($configErrors as $err)
-        $errorsList .= "<li>" . htmlspecialchars($err) . "</li>";
-    $errorsList .= "</ul>";
-    $message = "<strong>Config Warnings:</strong>" . $errorsList . ($message ? "<hr>" . $message : "");
-}
+// 2. State & Actions
+$alerts = [
+    'success' => [],
+    'warning' => kaiju_validate_config()
+];
 
-// 2. Action Handlers
-$message = $message ?: '';
 if (isset($_POST['action'])) {
     if ($_POST['action'] === 'build') {
         define('KT_WEB_BUILD', true);
         ob_start();
         include __DIR__ . '/cli/build.php';
-        $message = "Build Complete!<pre>" . htmlspecialchars(ob_get_clean()) . "</pre>";
+        $alerts['success'][] = "Build Complete!<pre>" . htmlspecialchars(ob_get_clean()) . "</pre>";
     } elseif ($_POST['action'] === 'clear_cache') {
         $files = glob($cachePath . '/*');
         foreach ($files as $file) {
             if (is_file($file))
                 unlink($file);
         }
-        $message = "Cache Cleared!";
+        $alerts['success'][] = "Cache Cleared!";
     }
 }
 
@@ -238,12 +232,28 @@ $cacheSizeStr = number_format($cacheSize / 1024, 2) . ' KB';
         }
 
         .alert {
-            background: rgba(56, 189, 248, 0.1);
-            border-left: 4px solid var(--accent);
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 20px;
             font-size: 14px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: rgba(74, 222, 128, 0.1);
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+
+        .alert-warning {
+            background: rgba(251, 191, 36, 0.1);
+            border-color: #fbbf24;
+            color: #fbbf24;
+        }
+
+        .alert ul {
+            margin: 8px 0 0 20px;
+            padding: 0;
         }
 
         pre {
@@ -263,8 +273,19 @@ $cacheSizeStr = number_format($cacheSize / 1024, 2) . ' KB';
         <p class="subtitle">Management Console for KaijuTranslator | <a href="?logout=1"
                 style="color:var(--accent); text-decoration:none;">Logout</a></p>
 
-        <?php if ($message): ?>
-            <div class="alert"><?php echo $message; ?></div>
+        <?php foreach ($alerts['success'] as $msg): ?>
+            <div class="alert alert-success"><?php echo $msg; ?></div>
+        <?php endforeach; ?>
+
+        <?php if (!empty($alerts['warning'])): ?>
+            <div class="alert alert-warning">
+                <strong>Config Warnings:</strong>
+                <ul>
+                    <?php foreach ($alerts['warning'] as $err): ?>
+                        <li><?php echo htmlspecialchars($err); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
         <?php endif; ?>
 
         <div class="grid">
