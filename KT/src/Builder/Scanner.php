@@ -67,9 +67,10 @@ class Scanner
 
     protected function isExcluded($path)
     {
+        $segments = explode('/', trim($path, '/'));
         foreach ($this->excludedPaths as $excluded) {
-            // Simple logic: if path starts with excluded folder or contains it
-            if (strpos($path, $excluded) === 0 || strpos($path, '/' . $excluded) !== false) {
+            // Check if any segment of the path exactly matches the excluded folder/file
+            if (in_array($excluded, $segments)) {
                 return true;
             }
         }

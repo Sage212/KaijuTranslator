@@ -1,0 +1,17 @@
+services:
+  kaiju-demo:
+    image: php:8.3-apache
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/examples/basic-site
+    working_dir: /var/www/html
+    command: >
+      bash -c "
+      ls -la /var/www/html &&
+      docker-php-ext-install curl &&
+      a2enmod rewrite &&
+      sed -i 's!/var/www/html!/var/www/html/examples/basic-site!g' /etc/apache2/sites-available/000-default.conf &&
+      apache2-foreground"

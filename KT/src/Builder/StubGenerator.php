@@ -8,7 +8,7 @@ class StubGenerator
 
     public function __construct($rootDir)
     {
-        $this->rootDir = rtrim($rootDir, '/');
+        $this->rootDir = str_replace('\\', '/', realpath($rootDir));
     }
 
     public function createStubs(array $files, array $languages)
@@ -38,13 +38,14 @@ class StubGenerator
 
     protected function writeStub($path, $lang)
     {
-        // We need a relative path to the centralized runner
-        // If path is /en/about.php, runner is at ../kaiju-translator/run.php
-        // Count depth
-        $depth = substr_count($path, '/') - substr_count($this->rootDir, '/');
-        // Actually, $path is absolute here.
+        // Normalize paths for comparison
+        $path = str_replace('\\', '/', $path);
 
-        $relativePathToRoot = str_repeat('../', substr_count(str_replace($this->rootDir . '/', '', $path), '/'));
+        // Calculate relative path from the stub to the KT directory
+        $relativeFromRoot = str_replace($this->rootDir . '/', '', $path);
+        $depth = substr_count($relativeFromRoot, '/');
+
+        $relativePathToRoot = str_repeat('../', $depth);
 
         $content = "<?php\n";
         $content .= "define('KT_LANG', '$lang');\n";

@@ -23,7 +23,7 @@ $injector = new HtmlInjector();
 $capture = new Capture();
 
 // 2. Determine Context
-$lang = defined('KT_LANG') ? KT_LANG : 'en'; // Should be defined by stub
+$lang = defined('KT_LANG') ? KT_LANG : ($config['base_lang'] ?? 'en');
 $sourcePath = $router->resolveSourceUrl($lang); // e.g. /about.php
 
 // 3. Cache Lookup

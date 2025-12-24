@@ -1,0 +1,32 @@
+{
+    "name": "branvan3000/kaiju-translator",
+    "description": "Premium AI-Powered PHP Translator with seamless SEO mirror technology.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "branvan3000"
+        }
+    ],
+    "require": {
+        "php": ">=8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "KaijuTranslator\\": "KT/src/"
+        }
+    },
+    "keywords": [
+        "php",
+        "translator",
+        "ai",
+        "seo",
+        "localization",
+        "i18n",
+        "l10n",
+        "multilingual",
+        "openai",
+        "deepseek",
+        "gemini"
+    ]
+}

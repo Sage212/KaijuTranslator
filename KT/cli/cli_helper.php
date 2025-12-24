@@ -5,7 +5,11 @@
 
 function get_cli_base_url()
 {
-    // In production, this should be in config.
-    // For local dev on desktop, maybe http://localhost/Kaijutranslator
-    return 'http://localhost/Kaijutranslator';
+    // Guess from directory name for local dev, but allow config override.
+    $config = function_exists('kaiju_config') ? kaiju_config() : [];
+    if (isset($config['base_url']))
+        return $config['base_url'];
+
+    $folder = basename(realpath(__DIR__ . '/../../'));
+    return 'http://localhost/' . $folder;
 }
