@@ -1,0 +1,25 @@
+# KaijuTranslator excludes
+kaiju-translator/cache/*
+kaiju-translator/state/*
+!kaiju-translator/cache/.gitkeep
+!kaiju-translator/state/.gitkeep
+
+# User Config (optional: sensitive API keys)
+# Uncomment if you don't want to commit your API key
+# kaiju-config.php
+
+# Generated directories
+/en/
+/fr/
+/es/
+/de/
+/it/
+/pt/
+# Add other languages as needed
+
+# Generated Sitemaps
+sitemaps/
+
+# IDEs
+.idea/
+.vscode/
