@@ -1,4 +1,4 @@
-# 🦖 KaijuTranslator | The Engineering-First PHP Localization Engine
+# KaijuTranslator: The Engineering-First PHP Translation Engine
 
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.0-blue.svg)](https://php.net)
 [![AI Powered](https://img.shields.io/badge/AI-Powered-red.svg)](#)
