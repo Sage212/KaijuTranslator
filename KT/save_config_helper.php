@@ -2,7 +2,7 @@
 
 function save_kaiju_config($baseLang, $targetLangs, $provider, $model, $apiKey)
 {
-    $configFile = __DIR__ . '/KT/kaiju-config.php';
+    $configFile = __DIR__ . '/kaiju-config.php';
 
     $configContent = "<?php\n\nreturn [\n";
     $configContent .= "    // --- Language Settings ---\n";

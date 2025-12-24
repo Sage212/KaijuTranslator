@@ -10,6 +10,7 @@ $cachePath = $config['cache_path'] ?? __DIR__ . '/cache';
 $message = '';
 if (isset($_POST['action'])) {
     if ($_POST['action'] === 'build') {
+        define('KT_WEB_BUILD', true);
         ob_start();
         include __DIR__ . '/cli/build.php';
         $message = "Build Complete!<pre>" . htmlspecialchars(ob_get_clean()) . "</pre>";
@@ -54,7 +55,7 @@ $cacheSizeStr = number_format($cacheSize / 1024, 2) . ' KB';
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100-vh;
+            min-height: 100vh;
             background: radial-gradient(circle at top right, #1e293b, #0f172a);
         }
 

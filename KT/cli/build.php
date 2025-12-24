@@ -1,6 +1,6 @@
 <?php
 
-if (php_sapi_name() !== 'cli') {
+if (php_sapi_name() !== 'cli' && !defined('KT_WEB_BUILD')) {
     die("Must be run from CLI");
 }
 
