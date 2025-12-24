@@ -19,10 +19,10 @@ KT follows a "Zero-Rewrite" philosophy. Instead of modifying your existing routi
 
 ```mermaid
 graph TD
-    A[Original Page: index.php] -->|KT Scanner| B{Stub Generator}
-    B --> C[/en/index.php]
-    B --> D[/es/index.php]
-    B --> E[/ja/index.php]
+    A["Original Page: index.php"] -->|KT Scanner| B{Stub Generator}
+    B --> C["/en/index.php"]
+    B --> D["/es/index.php"]
+    B --> E["/ja/index.php"]
     C -->|Request| F[KT Runtime]
     F -->|Capture| A
     F -->|AI Brain| G(OpenAI / DeepSeek / Gemini)
