@@ -141,21 +141,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $analyzer = new \KaijuTranslator\Core\Analyzer(realpath(__DIR__ . '/../'), $config['base_url'] ?? '');
                 $analysisResults = $analyzer->scanStructure(true); // Recursive scan
                 
-                // Count files (basic estimation: files in tree)
-                $fileCount = 0;
-                $stack = [$analysisResults['tree']];
-                while($node = array_pop($stack)) {
-                     foreach($node as $child) {
-                         if($child['type'] === 'file') $fileCount++;
-                         if($child['type'] === 'folder' && !empty($child['children'])) $stack[] = $child['children'];
-                     }
-                }
+                $fileCount = $analysisResults['total_files'] ?? 0;
+                // If we really need the tree for recursion logic, we must build it:
+                // $tree = $analyzer->buildFolderTree();
+                // But scanStructure already counts files recursively if true passed.
+
+                // If existing code intended to count only files in tree (which respects excludes):
+                // scanStructure also respects excludes. So using total_files is safer and faster.
+                // (Logic cleaned up to avoid undefined 'tree' error)
                 
                 // Store volume in session or a temp config if needed, for now session
                 $_SESSION['kaiju_volume'] = $fileCount;
                 $alerts['success'] = "Volume Calculation Complete: $fileCount Source Files Found.";
                 $activeTab = 'overview';
-        } elseif ($action === 'save_api_node') {
+            } elseif ($action === 'process_batch_item') {
+                // Enterprise Batch Engine Endpoint
+                ob_clean(); // Clean any previous output
+                ob_start(); // Buffer output to silence warnings
+                header('Content-Type: application/json');
+                
+                $file = $_POST['file'] ?? '';
+                $lang = $_POST['lang'] ?? '';
+                
+                $response = ['status' => 'error', 'message' => 'Unknown error'];
+
+                if (!$file || !$lang) {
+                    $response = ['status' => 'error', 'message' => 'Missing parameters'];
+                } else {
+                    require_once __DIR__ . '/src/Builder/StubGenerator.php';
+                    try {
+                        $generator = new \KaijuTranslator\Builder\StubGenerator(realpath(__DIR__ . '/../'));
+                        $generator->createStubs([$file], [$lang]);
+                        $response = ['status' => 'success', 'file' => $file, 'lang' => $lang];
+                    } catch (Exception $e) {
+                        $response = ['status' => 'error', 'message' => $e->getMessage()];
+                    }
+                }
+                
+                $output = ob_get_clean(); // Discard warnings
+                if (!empty($output) && $response['status'] !== 'success') {
+                     // If we had output and error, maybe output contains info? 
+                     // But for JSON safety we discard.
+                }
+                echo json_encode($response);
+                exit; // Stop execution
+            } elseif ($action === 'save_api_node') {
             $provider = $_POST['provider'];
             $key = $_POST['api_key'] ?? '';
             $model = $_POST['model'] ?? '';
@@ -415,8 +445,9 @@ $allIsoLangs = [
         .ai-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 2.5rem;
-            margin-top: 3rem;
+            gap: 3.5rem;
+            margin-top: 4rem;
+            margin-left: 2rem; /* Added left margin */
         }
 
         .ai-column {
@@ -1039,10 +1070,10 @@ $allIsoLangs = [
                             <div class="mapper-pane">
                                 <h4>Target Distribution Grid</h4>
                                 <ul class="tree-ul">
-                                    <li class="tree-li expanded">
-                                        <span class="tree-toggler" style="cursor: default;">📁
+                                    <li class="tree-li">
+                                        <span class="tree-toggler" onclick="this.parentElement.classList.toggle('expanded')">📁
                                             <strong>/KT/languages/</strong></span>
-                                        <ul style="display:block">
+                                        <ul>
                                             <?php if (empty($langs)): ?>
                                                 <li
                                                     style="padding: 2rem; color: var(--text-muted); font-style: italic; font-size: 0.9rem;">
@@ -1063,13 +1094,17 @@ $allIsoLangs = [
                                                     } else {
                                                         // It's a file
                                                         $targetVirtualPath = '/' . $lang . $currentPath;
-                                                        $previewUrl = $config['base_url'] . $targetVirtualPath;
+                                                        $previewUrl = $config['base_url'] . '/KT/languages/' . $lang . $currentPath;
 
                                                         echo '<li class="tree-li">';
                                                         echo '<div class="file-item">';
                                                         echo '<span style="font-family:monospace; font-size: 0.8rem; color: var(--text-muted);">' . $node['name'] . '</span>';
                                                         echo '<div style="display:flex; gap:5px;">';
-                                                        echo '<button class="btn-micro" title="Generate ' . $targetVirtualPath . '">⚙️ Gen</button>';
+                                                        // Data attributes for batch runner to find this button
+                                                        echo '<button type="button" class="btn-micro" 
+                                                            data-file="' . $currentPath . '" 
+                                                            data-lang="' . $lang . '"
+                                                            onclick="generateSingle(this, \'' . $currentPath . '\', \'' . $lang . '\')">⚙️ Gen</button>';
                                                         // Note: We use the virtual path for preview. In a real scenario, this file might not exist yet.
                                                         echo '<a href="' . $previewUrl . '" target="_blank" class="btn-micro" title="Preview ' . $targetVirtualPath . '">👁️ Prev</a>';
                                                         echo '</div>';
@@ -1083,7 +1118,7 @@ $allIsoLangs = [
                                                 <li class="tree-li">
                                                     <span class="tree-toggler" onclick="this.parentElement.classList.toggle('expanded')" style="color: var(--accent); cursor: pointer;">📁
                                                         <strong><?= strtoupper($l) ?>/</strong></span>
-                                                    <ul style="display:block; border-left-color: var(--accent-soft);">
+                                                    <ul style="display:none !important; border-left-color: var(--accent-soft);">
                                                         <?php
                                                         if (isset($analysisResults['tree'])) {
                                                             renderTargetTree($analysisResults['tree'], $l);
@@ -1106,9 +1141,176 @@ $allIsoLangs = [
                                     <?= $analysisResults['comparison']['suggestion'] ?? 'Scan successful. All paths are valid.' ?>
                                 </p>
                             </div>
-                            <div style="display: flex; gap: 1.5rem;">
-                                <button class="btn btn-ghost">🧪 Dry Run (1 File)</button>
-                                <button class="btn btn-primary">🚀 Execute Production Build</button>
+                            <div style="width: 100%;">
+                                <!-- Batch Engine UI -->
+                                <div id="batchUI">
+                                    <div style="display: flex; gap: 1.5rem; justify-content: flex-end; align-items: center;">
+                                        <div id="batchStats" style="display:none; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">
+                                            <span id="batchProgressText">0%</span>
+                                        </div>
+                                        <button type="button" onclick="startBatch()" class="btn btn-primary" id="btnBatchStart">
+                                            🚀 Launch Enterprise Batch
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="batchConsole" style="display:none; margin-top: 2rem; background: #0f172a; border-radius: 12px; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #10b981;">
+                                        <div style="margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+                                            <span style="color: #fff; font-weight: bold;">EXECUTION LOG</span>
+                                            <span id="batchTimer" style="color: #64748b;">00:00.000</span>
+                                        </div>
+                                        <div style="background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 15px;">
+                                            <div id="batchProgressBar" style="width: 0%; height: 100%; background: #10b981; transition: width 0.1s linear;"></div>
+                                        </div>
+                                        <div id="batchLogOutput" style="height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; color: #94a3b8;">
+                                            <div style="color: #64748b;">> System Ready. Waiting for command...</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Data Injection -->
+                                <script>
+                                    const KAIJU_DATA = {
+                                        files: <?= json_encode($analysisResults['files'] ?? []) ?>,
+                                        langs: <?= json_encode($langs ?? []) ?>,
+                                        baseUrl: "<?= $config['base_url'] ?? '' ?>"
+                                    };
+
+                                    let batchQueue = [];
+                                    let totalOps = 0;
+                                    let startTime = 0;
+
+                                    function startBatch() {
+                                        if (KAIJU_DATA.files.length === 0 || KAIJU_DATA.langs.length === 0) {
+                                            alert("No files or languages detected. Please scan first.");
+                                            return;
+                                        }
+
+                                        // UI Reset
+                                        document.getElementById('btnBatchStart').disabled = true;
+                                        document.getElementById('btnBatchStart').innerHTML = "⚙️ Processing...";
+                                        document.getElementById('batchConsole').style.display = 'block';
+                                        const logObj = document.getElementById('batchLogOutput');
+                                        logObj.innerHTML = '';
+                                        
+                                        // Build Queue
+                                        batchQueue = [];
+                                        KAIJU_DATA.files.forEach(f => {
+                                            KAIJU_DATA.langs.forEach(l => {
+                                                batchQueue.push({file: f, lang: l});
+                                            });
+                                        });
+
+                                        totalOps = batchQueue.length;
+                                        startTime = Date.now();
+                                        log("init", `> Initializing Batch Engine. Operations queued: ${totalOps}`);
+                                        
+                                        // Start Loop
+                                        processNextItem();
+                                    }
+
+                                    function processNextItem() {
+                                        if (batchQueue.length === 0) {
+                                            finishBatch();
+                                            return;
+                                        }
+
+                                        const item = batchQueue.shift();
+                                        const current = totalOps - batchQueue.length;
+                                        const pct = Math.round((current / totalOps) * 100);
+                                        
+                                        updateVisuals(pct);
+
+                                        // AJAX Request
+                                        const formData = new FormData();
+                                        formData.append('action', 'process_batch_item');
+                                        formData.append('file', item.file);
+                                        formData.append('lang', item.lang);
+
+                                        fetch('', {
+                                            method: 'POST',
+                                            body: formData
+                                        })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            if (data.status === 'success') {
+                                                log("success", `> [${item.lang.toUpperCase()}] ${item.file} ... OK`);
+                                                
+                                                // Update individual button if visible
+                                                const btn = document.querySelector(`button[data-file="${item.file}"][data-lang="${item.lang}"]`);
+                                                if (btn) {
+                                                    btn.innerText = "✅";
+                                                    btn.style.color = "#10b981";
+                                                    btn.style.borderColor = "#10b981";
+                                                }
+
+                                            } else {
+                                                log("error", `> [ERROR] ${item.file}: ${data.message}`);
+                                            }
+                                            processNextItem(); // Recursion
+                                        })
+                                        .catch(err => {
+                                            log("error", `> [FATAL] Network Error on ${item.file}`);
+                                            processNextItem(); // Continue anyway
+                                        });
+                                    }
+
+                                    function updateVisuals(pct) {
+                                        document.getElementById('batchProgressBar').style.width = pct + '%';
+                                        const elapsed = (Date.now() - startTime) / 1000;
+                                        document.getElementById('batchTimer').innerText = elapsed.toFixed(3) + 's';
+                                    }
+
+                                    function generateSingle(btn, file, lang) {
+                                        // Visual feedback: Loading
+                                        const originalText = btn.innerText;
+                                        btn.innerText = "⏳...";
+                                        btn.disabled = true;
+
+                                        const formData = new FormData();
+                                        formData.append('action', 'process_batch_item');
+                                        formData.append('file', file);
+                                        formData.append('lang', lang);
+
+                                        fetch('', {
+                                            method: 'POST',
+                                            body: formData
+                                        })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            if (data.status === 'success') {
+                                                btn.innerText = "✅ Done";
+                                                btn.style.color = "#10b981";
+                                                btn.style.borderColor = "#10b981";
+                                            } else {
+                                                btn.innerText = "❌ Err";
+                                                btn.title = data.message;
+                                                btn.disabled = false; // Allow retry
+                                            }
+                                        })
+                                        .catch(err => {
+                                            btn.innerText = "⚠️ Net";
+                                            btn.disabled = false;
+                                        });
+                                    }
+
+                                    function log(type, msg) {
+                                        const div = document.createElement('div');
+                                        div.innerText = msg;
+                                        if (type === 'error') div.style.color = '#ef4444';
+                                        if (type === 'success') div.style.color = '#10b981';
+                                        
+                                        const cont = document.getElementById('batchLogOutput');
+                                        cont.appendChild(div);
+                                        cont.scrollTop = cont.scrollHeight;
+                                    }
+
+                                    function finishBatch() {
+                                        log("info", "> BATCH COMPLETED SUCCESSFULLY.");
+                                        document.getElementById('btnBatchStart').innerHTML = "✅ Done";
+                                        document.getElementById('btnBatchStart').style.background = "#10b981";
+                                        updateVisuals(100);
+                                    }
+                                </script>
                             </div>
                         </div>
                     <?php endif; ?>
