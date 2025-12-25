@@ -1,3 +1,6 @@
+# Dependencies
+vendor/
+
 # KaijuTranslator excludes
 kaiju-translator/cache/*
 kaiju-translator/state/*
