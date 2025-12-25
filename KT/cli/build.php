@@ -67,6 +67,16 @@ if ($config['seo']['hreflang_enabled']) {
             echo "Skipping sitemaps...\n";
         } else {
             $sitemapsUrl = $config['sitemaps_url'] ?? null;
+
+            // Heuristic check: if path is custom but URL is missing, warn user
+            $sitemapsPath = rtrim($config['sitemaps_path'], '/\\');
+            $isDefaultPath = substr($sitemapsPath, -14) === 'sitemaps/kaiju'; // Check end of string
+
+            if (!$sitemapsUrl && !$isDefaultPath) {
+                echo "WARNING: Custom 'sitemaps_path' detected but 'sitemaps_url' is missing.\n";
+                echo "         Sitemap index will assume default '/sitemaps/kaiju' URL structure, which may be incorrect.\n";
+            }
+
             $sitemapGen = new SitemapGen($config['sitemaps_path'], $baseUrl, $sitemapsUrl);
 
             $generatedSitemaps = [];

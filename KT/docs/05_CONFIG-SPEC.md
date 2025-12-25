@@ -5,7 +5,7 @@
 - `base_lang`: idioma base (ej.: `es`)
 - `languages`: idiomas activos (ej.: `["es","en","fr"]`)
 - `base_url`: (Opcional) La URL pública del sitio. Requerido para sitemaps.
-- `translation_provider`: `openai`, `deepseek` o `gemini`.
+- `translation_provider`: `openai`, `deepseek`, `gemini` o `gpt4`.
 - `api_key`: clave API (preferible en variables de entorno)
 
 ## 2. Descubrimiento y Escaneo

@@ -100,8 +100,10 @@ function kaiju_validate_config()
     }
 
     // 4. Base URL Check (for sitemaps)
-    if (empty($config['base_url'])) {
-        $errors[] = "Config 'base_url' is missing. (Optional: only needed for CLI Sitemap generation).";
+    // 4. Base URL Check (for sitemaps)
+    if (empty($config['base_url']) && ($config['seo']['hreflang_enabled'] ?? false)) {
+        // Warning only, as it's only strictly needed for CLI build sitemaps
+        $errors[] = "Config 'base_url' is missing. Required for Sitemap generation (SEO enabled).";
     }
 
     return $errors;
